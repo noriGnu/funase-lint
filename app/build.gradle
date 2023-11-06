@@ -22,11 +22,12 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'info.picocli:picocli:4.7.5'
 }
 
 application {
     // Define the main class for the application.
-    mainClass = 'funase.format.App'
+    mainClass = 'funase.lint.App'
 }
 
 tasks.named('test') {

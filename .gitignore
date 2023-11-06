@@ -1,36 +1,50 @@
-# ビルドファイルと出力
-build/
-out/
-*.class
-
-# Gradle 関連
+# Gradle関連
 .gradle/
-gradle/
-!gradle-wrapper.jar
+build/
 
-# OS 生成ファイル
+# ビルド成果物
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# OS関連
 .DS_Store
 Thumbs.db
 
-# IDE 関連
-.idea/
+# IDE（統合開発環境）関連
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IntelliJ IDEA
 *.iml
-*.iws
+.idea/
+out/
 
-# 一般的なバックアップファイル
-*.bak
-*.swp
-*.swo
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
 
-# 一時ファイル
+# VS Code
+.vscode/
+
+# パッケージングされたGradle Wrapperファイル
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# その他の一般的な無視ファイル
+*.log
 *.tmp
 *.temp
 
-# ライセンスと README 以外の Markdown ファイル
-*.md
-!README.md
-!LICENSE
-
-# その他無視したいファイルやディレクトリ
-# 例: シークレットキーなど
-# secret.properties
+# ローカル設定ファイル
+*.local
