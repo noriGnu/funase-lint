@@ -1,4 +1,4 @@
-package funase.lint.rules;
+package funaselint.rules;
 
 public class RuleResult {
     

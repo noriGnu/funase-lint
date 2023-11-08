@@ -1,4 +1,4 @@
-package funase.lint;
+package funaselint;
 
 import java.io.File;
 import java.util.concurrent.Callable;
