@@ -22,7 +22,7 @@ public class App implements Callable<Integer> {
     private boolean fix;
 
     @Option(names = { "--style", "-s" }, description = "Specify output style.")
-    private String format;
+    private String style;
 
     @Option(names = { "--ignore", "-i" }, description = "Specify patterns to ignore.")
     private String ignore;
@@ -54,7 +54,7 @@ public class App implements Callable<Integer> {
             // 修正可能な問題の自動修正
         }
 
-        if (format != null) {
+        if (style != null) {
             // 指定された形式での出力
         }
 
