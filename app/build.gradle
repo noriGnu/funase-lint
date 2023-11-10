@@ -28,6 +28,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass = 'funaselint.App'
+    applicationName = 'funase-lint'
 }
 
 tasks.named('test') {
