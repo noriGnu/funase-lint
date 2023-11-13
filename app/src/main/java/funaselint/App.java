@@ -3,6 +3,7 @@ package funaselint;
 import java.io.File;
 import java.util.concurrent.Callable;
 
+import funaselint.linter.Linter;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -34,6 +35,8 @@ public class App implements Callable<Integer> {
 
     @Parameters(index = "0", description = "The PowerPoint file or directory to lint.")
     private File inputPath;
+
+    private Linter linter = new Linter();
 
     @Override
     public Integer call() throws Exception {
@@ -79,9 +82,7 @@ public class App implements Callable<Integer> {
     }
 
     public void lintPresentation(File presentation) {
-        // ここにパワーポイントファイルをリントする処理を実装します。
-        System.out.println("Linting " + presentation.getName());
-        // ...
+        linter.lint(presentation);
     }
 
     public void lintDirectory(File directory) {
