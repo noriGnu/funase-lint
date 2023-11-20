@@ -10,6 +10,10 @@ import funaselint.linter.Linter;
 import funaselint.linter.LinterOption;
 import funaselint.rules.Rule;
 import funaselint.rules.SlideAspectRule;
+import funaselint.rules.PunctuationMarkRule;
+import funaselint.rules.AmbiguousWordRule;
+import funaselint.rules.FontSizeRule;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -49,6 +53,9 @@ public class App implements Callable<Integer> {
         
         List<Rule> rules = new ArrayList<>();
         rules.add(new SlideAspectRule());
+        rules.add(new PunctuationMarkRule());
+        rules.add(new AmbiguousWordRule());
+        rules.add(new FontSizeRule());
         linterOption.setRules(rules);
 
         if (rule != null) {
