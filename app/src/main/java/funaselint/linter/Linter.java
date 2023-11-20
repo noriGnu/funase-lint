@@ -6,32 +6,11 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import funaselint.rules.PunctuationMarkRule;
-import funaselint.rules.RuleEngine;
-import funaselint.rules.SlideAspectRule;
+import javax.xml.parsers.ParserConfigurationException;
 
-public class Linter {
-    public void lint(File presentation) {
-        try {
-            // 一時ディレクトリの作成
-            File tempDir = Files.createTempDirectory("unzippedPptx").toFile();
-
-            // .pptx ファイルを解凍
-            unzipFile(presentation, tempDir);
-
-            // PowerPointファイルに対するリント処理の実装
-            System.out.println("Linting PowerPoint file: " + presentation.getName());
-            // ルールベースのチェックや修正処理
-
-            RuleEngine engine = new RuleEngine();
-            engine.addRule(new SlideAspectRule());
-            engine.addRule(new PunctuationMarkRule());
-
-            try {
-                engine.applyRules(tempDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+import funaselint.model.Presentation;
+import funaselint.utils.TempDirUtils;
+import funaselint.utils.ZipUtils;
 
 public class Linter {
     private RuleEngine ruleEngine;
