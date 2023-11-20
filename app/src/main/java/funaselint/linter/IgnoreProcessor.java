@@ -1,6 +1,5 @@
 package funaselint.linter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -14,25 +13,24 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class FileFilterProcessor {
+public class IgnoreProcessor {
     private static final String IGNORE_FILE_NAME = ".funaseignore";
     private static final String GLOB_PREFIX = "glob:";
 
-    private File topLevelDirectory;
-    private Map<File, Set<String>> ignoredPatternsCache = new HashMap<>();
-    private Map<File, Set<String>> allowedPatternsCache = new HashMap<>();
-    private Map<File, Boolean> ignoreFileExistenceCache = new ConcurrentHashMap<>();
+    private Path topLevelDirectory;
+    private Map<Path, Set<String>> ignoredPatternsCache = new HashMap<>();
+    private Map<Path, Set<String>> allowedPatternsCache = new HashMap<>();
+    private Map<Path, Boolean> ignoreFileExistenceCache = new ConcurrentHashMap<>();
     private Map<String, PathMatcher> pathMatcherCache = new ConcurrentHashMap<>();
 
-    public FileFilterProcessor(File topLevelDirectory) {
+    public IgnoreProcessor(Path topLevelDirectory) {
         this.topLevelDirectory = topLevelDirectory;
     }
 
-    public Set<File> findFilesToLint() {
+    public Set<Path> findFilesToLint() {
         try {
-            return Files.walk(topLevelDirectory.toPath())
+            return Files.walk(topLevelDirectory)
                     .filter(this::isPptxFile)
-                    .map(Path::toFile)
                     .filter(this::isFileLintable)
                     .collect(Collectors.toSet());
         } catch (IOException e) {
@@ -45,33 +43,33 @@ public class FileFilterProcessor {
         return path.toString().toLowerCase().endsWith(".pptx");
     }
 
-    private boolean isFileLintable(File file) {
-        File ignoreFile = findNearestConfigurationFile(file);
+    private boolean isFileLintable(Path path) {
+        Path ignoreFile = findNearestConfigurationFile(path);
         if (ignoreFile != null && !ignoredPatternsCache.containsKey(ignoreFile)) {
             processConfigurationFile(ignoreFile);
         }
-        String relativePath = topLevelDirectory.toPath().relativize(file.toPath()).toString();
+        Path relativePath = topLevelDirectory.relativize(path);
 
         return matchesAllowedPatterns(ignoreFile, relativePath) || !matchesIgnoredPatterns(ignoreFile, relativePath);
     }
 
-    private File findNearestConfigurationFile(File file) {
-        File current = file.getParentFile();
-        while (current != null && !current.equals(topLevelDirectory.getParentFile())) {
-            File ignoreFile = new File(current, IGNORE_FILE_NAME);
-            Boolean exists = ignoreFileExistenceCache.computeIfAbsent(ignoreFile, File::exists);
+    private Path findNearestConfigurationFile(Path path) {
+        Path current = path.getParent();
+        while (current != null && !current.equals(topLevelDirectory.getParent())) {
+            Path ignoreFile = current.resolve(IGNORE_FILE_NAME);
+            Boolean exists = ignoreFileExistenceCache.computeIfAbsent(ignoreFile, Files::exists);
             if (exists) {
                 return ignoreFile;
             }
-            current = current.getParentFile();
+            current = current.getParent();
         }
         return null;
     }
 
-    private void processConfigurationFile(File ignoreFile) {
+    private void processConfigurationFile(Path ignoreFile) {
         Set<String> patterns;
         try {
-            patterns = Files.lines(ignoreFile.toPath())
+            patterns = Files.lines(ignoreFile)
                     .filter(line -> !line.startsWith("#") && !line.trim().isEmpty())
                     .collect(Collectors.toSet());
         } catch (IOException e) {
@@ -93,26 +91,25 @@ public class FileFilterProcessor {
         allowedPatternsCache.put(ignoreFile, allowedPatterns);
     }
 
-    private boolean matchesAllowedPatterns(File ignoreFile, String path) {
-        return matchesPatterns(allowedPatternsCache, ignoreFile, path);
+    private boolean matchesAllowedPatterns(Path ignoreFile, Path relativePath) {
+        return matchesPatterns(allowedPatternsCache, ignoreFile, relativePath);
     }
 
-    private boolean matchesIgnoredPatterns(File ignoreFile, String path) {
-        return matchesPatterns(ignoredPatternsCache, ignoreFile, path);
+    private boolean matchesIgnoredPatterns(Path ignoreFile, Path relativePath) {
+        return matchesPatterns(ignoredPatternsCache, ignoreFile, relativePath);
     }
 
-    private boolean matchesPatterns(Map<File, Set<String>> patternsCache, File ignoreFile, String path) {
-        Path absolutePath = topLevelDirectory.toPath().resolve(path).normalize();
+    private boolean matchesPatterns(Map<Path, Set<String>> patternsCache, Path ignoreFile, Path relativePath) {
         return patternsCache.getOrDefault(ignoreFile, Collections.emptySet()).stream().anyMatch(pattern -> {
             String globPattern;
             if (pattern.endsWith("/")) {
                 pattern = pattern.substring(0, pattern.length() - 1);
-                globPattern = GLOB_PREFIX + "**/" + pattern + "/**";
+                globPattern = GLOB_PREFIX +  pattern + "/**";
             } else {
-                globPattern = GLOB_PREFIX + "**/" + pattern;
+                globPattern = GLOB_PREFIX + pattern;
             }
             PathMatcher matcher = getPathMatcher(globPattern);
-            return matcher.matches(absolutePath);
+            return matcher.matches(relativePath);
         });
     }
 

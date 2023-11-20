@@ -3,7 +3,6 @@ package funaselint.linter;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,15 +12,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class FileFilterProcessorTest {
+public class IgnoreProcessorTest {
 
     @TempDir
     Path testDirectory;
-    FileFilterProcessor processor;
+    IgnoreProcessor processor;
 
     @BeforeEach
     public void setUp() {
-        processor = new FileFilterProcessor(testDirectory.toFile());
+        processor = new IgnoreProcessor(testDirectory);
     }
 
     private void createFile(String path) throws IOException {
@@ -43,10 +42,10 @@ public class FileFilterProcessorTest {
         createFile("subdir/subdirPptx1.pptx");
         createFile("subdir/subdirPptx2.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertFalse(lintableFiles.contains(testDirectory.resolve("subdir/subdirPptx1.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertFalse(lintableFiles.contains(testDirectory.resolve("subdir/subdirPptx1.pptx")),
                 "subdirPptx1.pptx in subdir should not be lintable");
-        assertTrue(lintableFiles.contains(testDirectory.resolve("subdir/subdirPptx2.pptx").toFile()),
+        assertTrue(lintableFiles.contains(testDirectory.resolve("subdir/subdirPptx2.pptx")),
                 "subdirPptx2.pptx in subdir should be lintable");
     }
 
@@ -59,10 +58,10 @@ public class FileFilterProcessorTest {
         createDirectory("dir2");
         createFile("dir2/dir2Pptx.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertFalse(lintableFiles.contains(testDirectory.resolve("dir1/dir1Pptx.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertFalse(lintableFiles.contains(testDirectory.resolve("dir1/dir1Pptx.pptx")),
                 "dir1Pptx.pptx in dir1 should not be lintable");
-        assertTrue(lintableFiles.contains(testDirectory.resolve("dir2/dir2Pptx.pptx").toFile()),
+        assertTrue(lintableFiles.contains(testDirectory.resolve("dir2/dir2Pptx.pptx")),
                 "dir2Pptx.pptx in dir2 should be lintable");
     }
 
@@ -73,8 +72,8 @@ public class FileFilterProcessorTest {
         createFunaseignoreFile("nested", "inner/\n");
         createFile("nested/inner/innerPptx.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertFalse(lintableFiles.contains(testDirectory.resolve("nested/inner/innerPptx.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertFalse(lintableFiles.contains(testDirectory.resolve("nested/inner/innerPptx.pptx")),
                 "innerPptx.pptx in nested/inner should not be lintable");
     }
 
@@ -83,8 +82,8 @@ public class FileFilterProcessorTest {
         createDirectory("noIgnoreDir");
         createFile("noIgnoreDir/noIgnorePptx.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertTrue(lintableFiles.contains(testDirectory.resolve("noIgnoreDir/noIgnorePptx.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertTrue(lintableFiles.contains(testDirectory.resolve("noIgnoreDir/noIgnorePptx.pptx")),
                 "noIgnorePptx.pptx in noIgnoreDir should be lintable");
     }
 
@@ -95,8 +94,8 @@ public class FileFilterProcessorTest {
         createFunaseignoreFile("nested/inner", "!innerpptx.pptx\n");
         createFile("nested/inner/innerPptx.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertTrue(lintableFiles.contains(testDirectory.resolve("nested/inner/innerPptx.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertTrue(lintableFiles.contains(testDirectory.resolve("nested/inner/innerPptx.pptx")),
                 "innerPptx.pptx in nested/inner should be lintable despite parent ignore");
     }
 
@@ -106,8 +105,8 @@ public class FileFilterProcessorTest {
         createFunaseignoreFile("emptyIgnoreDir", "");
         createFile("emptyIgnoreDir/fileInEmptyIgnoreDir.pptx");
 
-        Set<File> lintableFiles = processor.findFilesToLint();
-        assertTrue(lintableFiles.contains(testDirectory.resolve("emptyIgnoreDir/fileInEmptyIgnoreDir.pptx").toFile()),
+        Set<Path> lintableFiles = processor.findFilesToLint();
+        assertTrue(lintableFiles.contains(testDirectory.resolve("emptyIgnoreDir/fileInEmptyIgnoreDir.pptx")),
                 "fileInEmptyIgnoreDir.pptx in emptyIgnoreDir should be lintable");
     }
 }
