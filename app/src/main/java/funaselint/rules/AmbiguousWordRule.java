@@ -10,7 +10,8 @@ import org.w3c.dom.NodeList;
 
 public class AmbiguousWordRule extends Rule {
 
-    private static final List<String> ambiguousWords = Arrays.asList("かなり", "非常に");
+    // ここで警告の対象とする曖昧な言葉を設定
+    private static final List<String> ambiguousWords = Arrays.asList("かなり", "非常に", "とても");
 
     @Override
     public List<String> applicableFilesOrFolders() {
