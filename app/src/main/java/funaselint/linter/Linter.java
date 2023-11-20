@@ -13,6 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import funaselint.rules.AmbiguousWordRule;
 import funaselint.rules.PunctuationMarkRule;
 import funaselint.rules.RuleEngine;
 import funaselint.rules.SlideAspectRule;
@@ -33,6 +34,7 @@ public class Linter {
             RuleEngine engine = new RuleEngine();
             engine.addRule(new SlideAspectRule());
             engine.addRule(new PunctuationMarkRule());
+            engine.addRule(new AmbiguousWordRule());
 
             try {
                 engine.applyRules(tempDir);
