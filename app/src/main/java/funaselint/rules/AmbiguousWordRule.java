@@ -28,7 +28,7 @@ public class AmbiguousWordRule extends Rule {
             // 曖昧な言葉が含まれているかどうかを確認
             for (String ambiguousWord : ambiguousWords) {
                 if (textContent.contains(ambiguousWord)) {
-                    System.out.println("Warning: 曖昧な言葉が使用されています。 File: " + file.getPath() + ", Text: " + textContent);
+                    System.out.println("Warning: 主観的評価は取り除きなさいな。 File: " + file.getPath() + ", Text: " + textContent);
                     return true;
                 }
             }
